@@ -18,7 +18,7 @@ Golog is a simple log for golang.
     rotatingHandler := logger.NewRotatingHandler("./", "test.log", 4, 4*1024*1024)
 
     // logger set handlers: console, rotating
-    logger.SetHandlers([]logger.Handler{logger.Console, rotatingHandler})
+    logger.SetHandlers(logger.Console, rotatingHandler)
 
     defer logger.Close()
 

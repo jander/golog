@@ -121,6 +121,8 @@ func NewRotatingHandler(dir string, filename string, maxNum int, maxSize int64) 
 	if h.isMustRename() {
 		h.rename()
 	} else {
+		h.mu.Lock()
+		defer h.mu.Unlock()
 		h.lg.SetOutput(logfile)
 	}
 
@@ -263,10 +265,7 @@ func (h *RotatingHandler) fileCheck() {
 type _Logger struct {
 	handlers []Handler
 	level    Level
-}
-
-func (l *_Logger) SetHandlers(handlers []Handler) {
-	l.handlers = handlers
+	mu       sync.Mutex
 }
 
 var logger = &_Logger{
@@ -276,8 +275,8 @@ var logger = &_Logger{
 	level: DEBUG,
 }
 
-func SetHandlers(handlers []Handler) {
-	logger.SetHandlers(handlers)
+func SetHandlers(handlers ...Handler) {
+	logger.handlers = handlers
 }
 
 func SetFlags(flag int) {

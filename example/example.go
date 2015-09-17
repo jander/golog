@@ -1,41 +1,36 @@
 package main
 
 import (
+	"bufio"
 	"github.com/jander/golog/logger"
 	"log"
+	"os"
 )
 
-func main() {
-	rotatingHandler := logger.NewRotatingHandler("./", "test.log", 4, 4*1024*1024)
+// This will run untill press enter key
 
-	logger.SetHandlers([]logger.Handler{logger.Console, rotatingHandler})
+func main() {
+	rotatingHandler := logger.NewRotatingHandler(".", "test.log", 4, 4*1024*1024)
+
+	logger.SetHandlers(logger.Console, rotatingHandler)
 
 	defer logger.Close()
 
 	logger.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	logger.SetLevel(logger.INFO)
+	//logger.DEBUG is default, nosense here.
+	logger.SetLevel(logger.DEBUG)
 
-	m := make(chan int)
-	n := make(chan int)
-
-	go func() {
-		for {
-			select {
-			case v := <-m:
-				logger.Warn("m", v)
-			case v := <-n:
-				logger.Info("n", v)
+	for i := 0; i < 10; i++ {
+		go func(num int) {
+			count := 0
+			for {
+				logger.Debug("log", num, "-", count)
+				count++
 			}
-		}
-	}()
-
-	for i := 0; i < 1000000; i++ {
-		if i%2 == 0 {
-			m <- i
-		} else {
-			n <- i
-		}
+		}(i)
 	}
 
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n')
 }

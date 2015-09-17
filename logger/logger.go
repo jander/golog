@@ -16,8 +16,6 @@ const (
 	INFO
 	WARN
 	ERROR
-	FATAL
-	OFF
 )
 
 /*
